@@ -19,6 +19,7 @@ $mcoPatch = Assert-File 'redfox-local\patch-mco-windows.ps1'
 $readme = Assert-File 'README.md'
 $license = Assert-File 'LICENSE'
 $funding = Assert-File '.github\FUNDING.yml'
+$banner = Assert-File 'assets\redfox-banner.png'
 
 $psText = Get-Content -Raw $installPs1
 foreach ($expected in @('redfox-local\Install-RedFox-Suite.ps1', 'packages\ai-trio', '-TrioPackagePath')) {
@@ -52,9 +53,27 @@ foreach ($target in @('.agents\skills\redfox', '.claude\skills\redfox')) {
 if ($skillInstallText -match 'Ollama|Install-RedFox-Suite') { throw 'Instalador somente-skill nao pode instalar o programa completo.' }
 
 $readmeText = Get-Content -Raw $readme
-foreach ($expected in @('irm ', 'install.cmd', 'npx skills add', 'RedFox', 'paypal.me/wesleybasso')) {
+foreach ($expected in @(
+    'assets/redfox-banner.png',
+    'img.shields.io',
+    'buymeacoffee.com/wesleybasso',
+    'Como a RedFox trabalha',
+    'Modos inteligentes',
+    'Programa Completo',
+    'Somente Skill',
+    'irm ',
+    'install.cmd',
+    'npx skills add',
+    'RedFox'
+)) {
     if ($readmeText -notmatch [regex]::Escape($expected)) { throw "README sem instrucao publica: $expected" }
 }
+
+$fundingText = Get-Content -Raw $funding
+if ($fundingText -notmatch [regex]::Escape('https://www.buymeacoffee.com/wesleybasso')) {
+    throw 'FUNDING.yml nao aponta para o Buy Me a Coffee informado pelo autor.'
+}
+if ((Get-Item -LiteralPath $banner).Length -lt 10000) { throw 'Banner RedFox parece vazio ou invalido.' }
 
 $trackedCandidates = Get-ChildItem -LiteralPath $root -Recurse -File | Where-Object {
     $_.FullName -notmatch '\\.git\\|\\reports\\|\\skill-development\\.*-workspace\\'
