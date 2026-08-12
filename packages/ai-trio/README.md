@@ -1,4 +1,4 @@
-# AI Trio / Quinteto — pacote para Windows
+# AI Trio / Quinteto — pacote para Windows e Linux
 
 > ⚠️ **ANTES DE INSTALAR, LEIA:** [`LEIA-PRIMEIRO-INSTALACAO.md`](LEIA-PRIMEIRO-INSTALACAO.md)
 > Este pacote **não funciona sozinho**: cada IA precisa estar **instalada como CLI** e
@@ -36,7 +36,9 @@ silenciosamente configurações existentes.
 
 ## Compatibilidade testada
 
-Este release é destinado a **Windows 10/11 x64**. As versões verificadas estão em
+Este release é destinado a **Windows 10/11 x64** e **Linux x64/ARM64**. A integração foi
+validada no Ubuntu 24.04; outras distribuições Linux compatíveis com PowerShell 7 podem
+funcionar. As versões verificadas estão em
 [`versions.lock.json`](versions.lock.json): PowerShell 7.6.4, Node.js 24.19.0, MCO 0.11.0,
 Gemini CLI 0.55.1, Qwen Code 0.21.6 e Pi 0.84.0.
 

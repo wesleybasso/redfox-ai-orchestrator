@@ -3,6 +3,18 @@ $ErrorActionPreference = 'Stop'
 
 function Update-RedFoxProcessPath {
     param([string]$MachinePath, [string]$UserPath)
+    if (-not $IsWindows) {
+        $homePath = [Environment]::GetFolderPath('UserProfile')
+        $parts = @(
+            $MachinePath,
+            $UserPath,
+            (Join-Path $homePath '.local/bin'),
+            (Join-Path $homePath '.local/share/redfox-runtime/npm/bin'),
+            $env:PATH
+        ) | Where-Object { $_ }
+        $env:PATH = $parts -join [IO.Path]::PathSeparator
+        return $env:PATH
+    }
     if (-not $PSBoundParameters.ContainsKey('MachinePath')) { $MachinePath = [Environment]::GetEnvironmentVariable('Path','Machine') }
     if (-not $PSBoundParameters.ContainsKey('UserPath')) { $UserPath = [Environment]::GetEnvironmentVariable('Path','User') }
     $parts = @($MachinePath, $UserPath) -join ';'

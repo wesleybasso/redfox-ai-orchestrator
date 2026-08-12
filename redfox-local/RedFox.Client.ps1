@@ -9,7 +9,12 @@ param(
     [Parameter(Mandatory, ParameterSetName='Status')][switch]$Status,
     [Parameter(Mandatory, ParameterSetName='Agents')][switch]$Agents,
     [ValidateRange(1024,65535)][int]$Port = 4777,
-    [string]$DataDirectory = (Join-Path $env:LOCALAPPDATA 'RedFox')
+    [string]$DataDirectory = $(if ($IsWindows) {
+        Join-Path $env:LOCALAPPDATA 'RedFox'
+    } else {
+        $base = if ($env:XDG_DATA_HOME) { $env:XDG_DATA_HOME } else { Join-Path $env:HOME '.local/share' }
+        Join-Path $base 'redfox'
+    })
 )
 
 $ErrorActionPreference = 'Stop'
@@ -18,7 +23,7 @@ if ($Status) { Invoke-RestMethod -Uri "$base/health"; exit 0 }
 if ($Agents) { Invoke-RestMethod -Uri "$base/agents"; exit 0 }
 
 $tokenPath = Join-Path $DataDirectory 'service.token'
-if (-not (Test-Path -LiteralPath $tokenPath)) { throw 'RedFox nao instalada. Execute Install-RedFox.ps1.' }
+if (-not (Test-Path -LiteralPath $tokenPath)) { throw 'RedFox nao instalada. Execute o instalador completo do seu sistema.' }
 $headers = @{ 'X-RedFox-Token' = [IO.File]::ReadAllText($tokenPath).Trim() }
 $body = @{ task=$Task; mode=$Mode; repo=$Repo; target_paths=$TargetPaths; dry_run=[bool]$DryRun; max_rounds=$MaxRounds } | ConvertTo-Json
 $endpoint = if ($DryRun) { 'plan' } else { 'run' }

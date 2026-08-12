@@ -11,9 +11,12 @@ function Assert-File([string]$RelativePath) {
 
 $installPs1 = Assert-File 'install.ps1'
 $installCmd = Assert-File 'install.cmd'
+$installLinux = Assert-File 'install-linux.sh'
 $skillInstall = Assert-File 'install-skill.ps1'
+$skillInstallLinux = Assert-File 'install-skill.sh'
 $skill = Assert-File 'skills\redfox\SKILL.md'
 $skillScript = Assert-File 'skills\redfox\scripts\invoke-redfox.ps1'
+$skillScriptLinux = Assert-File 'skills\redfox\scripts\invoke-redfox.sh'
 $trioInstaller = Assert-File 'packages\ai-trio\install.ps1'
 $mcoPatch = Assert-File 'redfox-local\patch-mco-windows.ps1'
 $readme = Assert-File 'README.md'
@@ -58,6 +61,8 @@ foreach ($expected in @(
     'assets/redfox-banner.png',
     'img.shields.io',
     'buymeacoffee.com/wesleybasso',
+    'install-linux.sh',
+    'Ubuntu 24.04',
     'assets/buy-me-a-coffee-qr.png',
     'Escaneie o QR Code',
     'Como a RedFox trabalha',

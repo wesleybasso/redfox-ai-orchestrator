@@ -24,3 +24,13 @@ jobs:
       - name: Validate Trio package
         shell: pwsh
         run: ./packages/ai-trio/tests/Test-Package.ps1
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate Linux distribution
+        shell: bash
+        run: ./tests/linux-support.Tests.sh
+      - name: Validate cross-platform coordinator
+        shell: bash
+        run: ./tests/linux-pwsh.Tests.sh

@@ -7,9 +7,9 @@ description: Use when the user addresses "RedFox", "Red Fox" or "raposa", asks f
 
 RedFox supports two editions. In the standalone skill edition, it provides the RedFox name and coordination policy over an existing `using-ai-trio`/MCO installation. In the complete-program edition, a persistent local coordinator powered by Ollama discovers agents, manages rounds and returns one coherent result. Always prefer the local service when available and fall back to the existing trio scripts when it is not.
 
-For council missions, RedFox operates an agent loop: plan the team, dispatch a read-only MCO debate and synthesis, evaluate the result locally with Ollama, issue a corrective follow-up when required, and persist the mission record under `%LOCALAPPDATA%\RedFox\missions`. MCO-compatible ready agents such as GitHub Copilot and OpenCode join automatically after discovery.
+For council missions, RedFox operates an agent loop: plan the team, dispatch a read-only MCO debate and synthesis, evaluate the result locally with Ollama, issue a corrective follow-up when required, and persist the mission record under `%LOCALAPPDATA%\RedFox\missions` on Windows or `~/.local/share/redfox/missions` on Linux. MCO-compatible ready agents such as GitHub Copilot and OpenCode join automatically after discovery.
 
-Do not require or install Ollama from the standalone skill. Installation of Ollama, CLIs and the Windows service belongs only to the separately distributed complete-program edition. Never automate credentials beyond secure local prompts.
+Do not require or install Ollama from the standalone skill. Installation of Ollama, CLIs and the local service belongs only to the separately distributed complete-program edition for Windows or Linux. Never automate credentials beyond secure local prompts.
 
 ## Activation
 
@@ -43,6 +43,12 @@ From PowerShell, locate the installed skill directory and run:
 
 ```powershell
 & '<skill-directory>\scripts\invoke-redfox.ps1' -Task '<missao>' -Repo '<repositorio>' -Mode auto
+```
+
+On Linux, invoke the Bash entrypoint:
+
+```bash
+bash '<skill-directory>/scripts/invoke-redfox.sh' --task '<missao>' --repo '<repositorio>' --mode auto
 ```
 
 Use `-Mode conselho`, `trio`, `quinteto`, `pesquisa` or `especialista` when the user specified a mode. Use `-DryRun -Json` only to explain or test routing without spending provider tokens.

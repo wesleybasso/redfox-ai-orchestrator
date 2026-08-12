@@ -19,6 +19,7 @@ $skillFolder = Join-Path $skillTarget 'redfox'
 [IO.Directory]::CreateDirectory((Join-Path $skillFolder 'scripts')) | Out-Null
 Copy-Item -LiteralPath (Join-Path $SkillSource 'SKILL.md') -Destination (Join-Path $skillFolder 'SKILL.md')
 Copy-Item -Path (Join-Path $SkillSource 'scripts\*') -Destination (Join-Path $skillFolder 'scripts')
+Copy-Item -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) 'install-skill.sh') -Destination (Join-Path $skillTarget 'INSTALAR-SOMENTE-SKILL.sh')
 
 $skillInstaller = @'
 [CmdletBinding()]

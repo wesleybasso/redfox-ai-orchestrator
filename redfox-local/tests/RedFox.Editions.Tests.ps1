@@ -12,9 +12,16 @@ try {
         (Join-Path $skill 'redfox\SKILL.md'),
         (Join-Path $skill 'redfox\scripts\invoke-redfox.ps1'),
         (Join-Path $skill 'INSTALAR-SOMENTE-SKILL.cmd'),
+        (Join-Path $skill 'INSTALAR-SOMENTE-SKILL.sh'),
         "$skill.zip",
         (Join-Path $complete 'redfox-local\Install-RedFox-Suite.ps1'),
-        (Join-Path $complete 'ai-trio-skills\install.ps1'),
+        (Join-Path $complete 'packages\ai-trio\install.ps1'),
+        (Join-Path $complete 'skills\redfox\SKILL.md'),
+        (Join-Path $complete 'install.ps1'),
+        (Join-Path $complete 'install-skill.ps1'),
+        (Join-Path $complete 'install-skill.sh'),
+        (Join-Path $complete 'INSTALAR-REDFOX.sh'),
+        (Join-Path $complete 'redfox-local\install-linux.sh'),
         "$complete.zip"
     )) { if (-not (Test-Path -LiteralPath $path)) { throw "Edicao incompleta: $path" } }
     if (Test-Path (Join-Path $skill 'redfox-local')) { throw 'Pacote somente skill incluiu o programa local.' }

@@ -22,7 +22,13 @@ $ErrorActionPreference = 'Stop'
 
 # Prefer the persistent local RedFox service. It discovers every MCO-compatible
 # agent on the machine and only admits authenticated, safe agents to the council.
-$localClient = Join-Path $env:LOCALAPPDATA 'RedFox\RedFox.Client.ps1'
+$localDataDirectory = if ($IsWindows) {
+    Join-Path $env:LOCALAPPDATA 'RedFox'
+} else {
+    $base = if ($env:XDG_DATA_HOME) { $env:XDG_DATA_HOME } else { Join-Path $env:HOME '.local/share' }
+    Join-Path $base 'redfox'
+}
+$localClient = Join-Path $localDataDirectory 'RedFox.Client.ps1'
 $localOnline = $false
 if (Test-Path -LiteralPath $localClient) {
     try { $localOnline = (Invoke-RestMethod -Uri 'http://127.0.0.1:4777/health' -TimeoutSec 2).status -eq 'online' } catch {}
@@ -55,9 +61,9 @@ function Select-RedFoxMode {
 function Find-TrioEngine {
     $homePath = [Environment]::GetFolderPath('UserProfile')
     $candidates = @(
-        (Join-Path $homePath '.codex\skills\using-ai-trio\scripts'),
-        (Join-Path $homePath '.agents\skills\using-ai-trio\scripts'),
-        (Join-Path $homePath '.claude\skills\using-ai-trio\scripts')
+        (Join-Path $homePath '.codex/skills/using-ai-trio/scripts'),
+        (Join-Path $homePath '.agents/skills/using-ai-trio/scripts'),
+        (Join-Path $homePath '.claude/skills/using-ai-trio/scripts')
     )
     foreach ($candidate in $candidates) {
         if (Test-Path -LiteralPath (Join-Path $candidate 'invoke-router.ps1')) { return $candidate }

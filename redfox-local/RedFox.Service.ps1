@@ -1,7 +1,12 @@
 [CmdletBinding()]
 param(
     [ValidateRange(1024, 65535)][int]$Port = 4777,
-    [string]$DataDirectory = (Join-Path $env:LOCALAPPDATA 'RedFox'),
+    [string]$DataDirectory = $(if ($IsWindows) {
+        Join-Path $env:LOCALAPPDATA 'RedFox'
+    } else {
+        $base = if ($env:XDG_DATA_HOME) { $env:XDG_DATA_HOME } else { Join-Path $env:HOME '.local/share' }
+        Join-Path $base 'redfox'
+    }),
     [ValidateRange(30, 3600)][int]$RefreshSeconds = 300
 )
 

@@ -12,14 +12,20 @@ if (-not (Test-Path (Join-Path $TrioSource 'install.ps1'))) { throw "Pacote ai-t
 $target = Join-Path $OutputRoot $PackageName
 if (Test-Path $target) { $target = Join-Path $OutputRoot ("$PackageName-" + (Get-Date -Format 'yyyyMMdd-HHmmss')) }
 $redfoxTarget = Join-Path $target 'redfox-local'
-$trioTarget = Join-Path $target 'ai-trio-skills'
+$trioTarget = Join-Path $target 'packages\ai-trio'
+$skillTarget = Join-Path $target 'skills\redfox'
 [IO.Directory]::CreateDirectory($redfoxTarget) | Out-Null
 [IO.Directory]::CreateDirectory($trioTarget) | Out-Null
+[IO.Directory]::CreateDirectory($skillTarget) | Out-Null
 
-foreach ($name in @('RedFox.Core.psm1','RedFox.Setup.psm1','RedFox.Service.ps1','RedFox.Client.ps1','Install-RedFox.ps1','Install-RedFox-Suite.ps1','Configure-RedFox.ps1','patch-mco-windows.ps1')) {
+foreach ($name in @('RedFox.Core.psm1','RedFox.Setup.psm1','RedFox.Service.ps1','RedFox.Client.ps1','Install-RedFox.ps1','Install-RedFox-Suite.ps1','Configure-RedFox.ps1','patch-mco-windows.ps1','install-linux.sh','configure-linux.sh')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination (Join-Path $redfoxTarget $name)
 }
 Copy-Item -Path (Join-Path $TrioSource '*') -Destination $trioTarget -Recurse
+Copy-Item -Path (Join-Path (Split-Path -Parent $PSScriptRoot) 'skills\redfox\*') -Destination $skillTarget -Recurse
+foreach ($name in @('install.ps1','install-skill.ps1','install-linux.sh','install-skill.sh')) {
+    Copy-Item -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) $name) -Destination (Join-Path $target $name)
+}
 
 $installCmd = @'
 @echo off
@@ -35,7 +41,7 @@ if not exist "%PWSH%" (
   pause
   exit /b 1
 )
-"%PWSH%" -NoProfile -ExecutionPolicy Bypass -File "%ROOT%redfox-local\Install-RedFox-Suite.ps1" -TrioPackagePath "%ROOT%ai-trio-skills"
+"%PWSH%" -NoProfile -ExecutionPolicy Bypass -File "%ROOT%install.ps1" -PackageRoot "%ROOT%"
 echo.
 pause
 '@
@@ -47,6 +53,7 @@ pause
 '@
 [IO.File]::WriteAllText((Join-Path $target 'INSTALAR-REDFOX.cmd'), $installCmd, [Text.Encoding]::ASCII)
 [IO.File]::WriteAllText((Join-Path $target 'CONFIGURAR-CONTAS.cmd'), $configureCmd, [Text.Encoding]::ASCII)
+Copy-Item -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) 'install-linux.sh') -Destination (Join-Path $target 'INSTALAR-REDFOX.sh')
 
 $zipPath = "$target.zip"
 Compress-Archive -Path (Join-Path $target '*') -DestinationPath $zipPath -CompressionLevel Optimal

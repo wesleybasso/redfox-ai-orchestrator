@@ -4,6 +4,7 @@ $ErrorActionPreference = 'Stop'
 function Resolve-OllamaExecutable {
     $command = Get-Command ollama -ErrorAction SilentlyContinue
     if ($command) { return $command.Source }
+    if (-not $IsWindows) { return $null }
     foreach ($path in @(
         (Join-Path $env:LOCALAPPDATA 'Programs\Ollama\ollama.exe'),
         (Join-Path $env:ProgramFiles 'Ollama\ollama.exe')
@@ -29,6 +30,7 @@ function Get-RedFoxMachineState {
         [string]$ServiceSourcePath
     )
     $ollama = Resolve-OllamaExecutable
+    $profileHome = if ($env:USERPROFILE) { $env:USERPROFILE } else { $env:HOME }
     [pscustomobject]@{
         Winget      = [bool](Get-Command winget -ErrorAction SilentlyContinue)
         Ollama      = [bool]$ollama
@@ -39,8 +41,13 @@ function Get-RedFoxMachineState {
         Codex       = [bool](Get-Command codex -ErrorAction SilentlyContinue)
         Gemini      = [bool](Get-Command gemini -ErrorAction SilentlyContinue)
         Model       = Test-RedFoxModel -OllamaPath $ollama -Model $Model
-        Integration = Test-Path -LiteralPath (Join-Path $env:USERPROFILE '.codex\skills\using-ai-trio\SKILL.md')
-        Service     = Test-Path -LiteralPath (Join-Path $env:LOCALAPPDATA 'RedFox\RedFox.Service.ps1')
+        Integration = Test-Path -LiteralPath (Join-Path $profileHome '.codex/skills/using-ai-trio/SKILL.md')
+        Service     = if ($IsWindows) {
+            Test-Path -LiteralPath (Join-Path $env:LOCALAPPDATA 'RedFox/RedFox.Service.ps1')
+        } else {
+            $linuxDataHome = if ($env:XDG_DATA_HOME) { $env:XDG_DATA_HOME } else { Join-Path $env:HOME '.local/share' }
+            Test-Path -LiteralPath (Join-Path $linuxDataHome 'redfox/RedFox.Service.ps1')
+        }
     }
 }
 

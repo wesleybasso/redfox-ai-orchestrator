@@ -1,7 +1,7 @@
 {
   "tested_on": "2026-08-12",
   "platform": {
-    "os": "Windows 10/11 x64",
+    "os": "Windows 10/11 x64; Ubuntu 24.04 x64; Linux ARM64 via installer",
     "powershell": "7.6.4",
     "node": "24.19.0"
   },

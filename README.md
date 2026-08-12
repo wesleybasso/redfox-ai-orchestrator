@@ -9,6 +9,7 @@
 [![Versão](https://img.shields.io/github/v/release/wesleybasso/redfox-ai-orchestrator?style=for-the-badge&color=ff5a36)](https://github.com/wesleybasso/redfox-ai-orchestrator/releases/latest)
 [![Testes](https://img.shields.io/github/actions/workflow/status/wesleybasso/redfox-ai-orchestrator/tests.yml?branch=main&style=for-the-badge&label=testes)](https://github.com/wesleybasso/redfox-ai-orchestrator/actions)
 [![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078d4?style=for-the-badge&logo=windows11)](#requisitos)
+[![Linux](https://img.shields.io/badge/Linux-Ubuntu%20%7C%20Debian%20%7C%20Fedora%20%7C%20Arch-fcc624?style=for-the-badge&logo=linux&logoColor=111111)](#linux)
 [![Licença MIT](https://img.shields.io/badge/licença-MIT-2ea44f?style=for-the-badge)](LICENSE)
 
 [Instalar](#-instalação) · [Como funciona](#-como-a-redfox-trabalha) · [Modos](#-modos-inteligentes) · [Downloads](https://github.com/wesleybasso/redfox-ai-orchestrator/releases/latest) · [Pague um café](https://www.buymeacoffee.com/wesleybasso)
@@ -48,12 +49,12 @@ assinaturas e contas; nenhuma credencial é incluída ou enviada para este repos
 
 | | **Somente Skill** | **Programa Completo** |
 | --- | --- | --- |
-| Ideal para | Quem já usa Trio/MCO | Quem quer preparar tudo do zero |
+| Ideal para | Quem já usa Trio/MCO | Quem quer preparar tudo do zero no Windows ou Linux |
 | RedFox no prompt | ✅ | ✅ |
 | Coordenação do conselho | Usa a integração existente | Serviço local persistente |
 | Ollama e modelo local | Não instala | Instala e configura |
 | Claude, Codex e Gemini CLI | Devem existir | Instala quando necessário |
-| Serviço automático | — | ✅ inicia com o Windows |
+| Serviço automático | — | ✅ inicia com Windows ou `systemd` |
 | Download | [ZIP da Skill](https://github.com/wesleybasso/redfox-ai-orchestrator/releases/latest) | [ZIP Completo](https://github.com/wesleybasso/redfox-ai-orchestrator/releases/latest) |
 
 ## 🚀 Instalação
@@ -74,6 +75,19 @@ Abra o Prompt de Comando e execute:
 curl.exe -fsSL https://raw.githubusercontent.com/wesleybasso/redfox-ai-orchestrator/main/install.cmd -o "%TEMP%\install-redfox.cmd" && call "%TEMP%\install-redfox.cmd"
 ```
 
+### Linux
+
+Testado no **Ubuntu 24.04** em x64. O instalador também reconhece ambientes Linux x64 e
+ARM64 baseados em Ubuntu/Debian, Fedora/RHEL e Arch. Abra o terminal e execute:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wesleybasso/redfox-ai-orchestrator/main/install-linux.sh | bash
+```
+
+O instalador prepara PowerShell e Node dentro do perfil do usuário, instala o Ollama pelo
+método oficial, configura as CLIs, instala o Trio e registra a RedFox como serviço de usuário
+`systemd`. O Ollama pode solicitar `sudo`; as demais runtimes ficam em `~/.local/share`.
+
 ### Somente a Skill
 
 Para quem já possui `using-ai-trio` e MCO configurados:
@@ -88,12 +102,19 @@ Alternativa direta pelo PowerShell:
 irm https://raw.githubusercontent.com/wesleybasso/redfox-ai-orchestrator/main/install-skill.ps1 | iex
 ```
 
+No Linux, instale somente a skill com:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wesleybasso/redfox-ai-orchestrator/main/install-skill.sh | bash
+```
+
 ### Download com dois cliques
 
 1. Abra a página de [Releases](https://github.com/wesleybasso/redfox-ai-orchestrator/releases/latest).
 2. Baixe `RedFox-Programa-Completo.zip` ou `RedFox-Somente-Skill.zip`.
 3. Extraia o arquivo.
-4. No pacote completo, execute `INSTALAR-REDFOX.cmd`. Na edição Skill, execute `INSTALAR-SOMENTE-SKILL.cmd`.
+4. No Windows, execute `INSTALAR-REDFOX.cmd`; no Linux, execute `bash INSTALAR-REDFOX.sh`.
+   Na edição Skill, use o instalador `.cmd`, `.ps1` ou `.sh` correspondente ao sistema.
 
 ## 🗣️ Como usar
 
@@ -166,21 +187,23 @@ chamados silenciosamente.
 
 ## Requisitos
 
-- Windows 10 ou Windows 11 x64
-- `winget` disponível pelo App Installer da Microsoft
+- Windows 10/11 x64 com `winget`; ou Linux x64/ARM64
+- Linux validado automaticamente no Ubuntu 24.04
+- `systemd` de usuário recomendado no Linux; quando indisponível, a sessão recebe um processo local
 - Internet durante a instalação
 - Conta ou API válida para cada serviço externo que você desejar usar
 
 ## 🧪 Qualidade e testes
 
-O projeto possui testes automatizados no Windows para validar o pacote público, o coordenador
-local, a separação entre as duas edições e a integração do Trio — sem gastar tokens de IA.
+O projeto possui testes automatizados no Windows e Ubuntu para validar o pacote público, o
+coordenador local, a separação entre as duas edições e a integração do Trio — sem gastar tokens de IA.
 
 ```powershell
 pwsh -NoProfile -File ./tests/public-release.Tests.ps1
 pwsh -NoProfile -File ./redfox-local/tests/RedFox.Local.Tests.ps1
 pwsh -NoProfile -File ./redfox-local/tests/RedFox.Setup.Tests.ps1
 pwsh -NoProfile -File ./packages/ai-trio/tests/Test-Package.ps1
+bash ./tests/linux-support.Tests.sh
 ```
 
 ## ☕ Pague um café
