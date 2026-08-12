@@ -1,0 +1,29 @@
+# Comando customizado do Gemini CLI: /especialista
+# Instala em: ~/.gemini/commands/especialista.toml
+# Uso no Gemini CLI:  /especialista otimize este algoritmo O(n^2)
+#
+# Roteador: um LLM barato (Gemini) classifica a tarefa em um dominio
+# (arch, impl, algo, math, research) e chama APENAS o modelo especialista
+# mais forte naquilo, em modo read_only. Nao e o painel trio/quinteto.
+#
+# Qwen e DeepSeek (dominios algo/math) exigem OpenRouter configurado:
+#   pwsh -File ~/.gemini/trio-scripts/configure-openrouter.ps1
+
+description = "Roteia a tarefa para o modelo especialista certo (Claude/Codex/Qwen/DeepSeek/Gemini) via MCO em read_only."
+
+prompt = """
+Voce e o host de um roteador multi-modelo. O usuario pediu:
+
+{{args}}
+
+Abaixo esta o resultado do roteador: um classificador escolheu o dominio e chamou o modelo especialista correspondente (arch->Claude, impl->Codex, algo->Qwen, math->DeepSeek, research->Gemini), em modo read_only:
+
+!{pwsh -NoProfile -File "$env:USERPROFILE/.gemini/trio-scripts/invoke-router.ps1" -Task {{args}}}
+
+Com base nesse resultado:
+1. Diga qual dominio/especialista foi escolhido.
+2. Apresente a resposta do especialista de forma clara.
+3. Se o especialista falhou ou expirou, explique o que aconteceu e sugira rodar com -Domain forcado.
+
+Mantenha tudo em read_only, salvo pedido explicito de implementacao.
+"""

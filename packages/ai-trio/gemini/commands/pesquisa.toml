@@ -1,0 +1,29 @@
+# Comando customizado do Gemini CLI: /pesquisa
+# Instala em: ~/.gemini/commands/pesquisa.toml
+# Uso no Gemini CLI:  /pesquisa qual a versao LTS atual do Node.js
+#
+# Melhor que a Perplexity: o script busca na web (Tavily), injeta as
+# FONTES reais nos modelos, um modelo redige com citacoes [n] e OUTRO
+# modelo verifica cada citacao contra as fontes (anti-alucinacao).
+#
+# Requer a chave de busca web (gratis) configurada uma vez:
+#   pwsh -File ~/.gemini/trio-scripts/configure-search.ps1
+
+description = "Pesquisa web com fontes citadas e verificacao cruzada entre modelos (supera a Perplexity)."
+
+prompt = """
+Voce e o host de um modo de pesquisa web com verificacao. O usuario perguntou:
+
+{{args}}
+
+Abaixo esta o resultado: o script buscou fontes reais na web, um modelo redigiu a resposta citando [n] e outro modelo verificou cada citacao contra as fontes:
+
+!{pwsh -NoProfile -File "$env:USERPROFILE/.gemini/trio-scripts/invoke-research.ps1" -Query {{args}}}
+
+Com base nisso:
+1. Apresente a resposta final citada [n], removendo qualquer afirmacao marcada como NAO-SUSTENTADO ou SEM-FONTE pela verificacao.
+2. Liste as fontes usadas com URL.
+3. Informe a CONFIABILIDADE reportada e destaque o que ficou sem confirmacao.
+
+Nunca apresente como fato algo que a verificacao nao sustentou nas fontes.
+"""

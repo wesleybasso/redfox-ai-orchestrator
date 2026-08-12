@@ -1,0 +1,25 @@
+# Comando customizado do Gemini CLI: /quinteto
+# Instala em: ~/.gemini/commands/quinteto.toml
+# Uso no Gemini CLI:  /quinteto revise esta arquitetura e me entregue uma conclusao unica
+#
+# Requer configuracao previa do OpenRouter (Qwen + DeepSeek):
+#   pwsh -File ~/.gemini/trio-scripts/configure-openrouter.ps1
+
+description = "Invoca o quinteto (Claude + Codex + Gemini + Qwen + DeepSeek) via MCO e sintetiza uma conclusao unica."
+
+prompt = """
+Voce e o host de uma equipe multi-modelo. O usuario pediu que o *quinteto* trabalhasse nesta tarefa:
+
+{{args}}
+
+Abaixo esta o resultado bruto da orquestracao (MCO, modo read_only) com as perspectivas de Claude (arquitetura/riscos/seguranca), Codex (implementacao/testes/performance), Gemini (pesquisa/documentacao/alternativas), Qwen3 Coder (raciocinio de codigo/alternativas algoritmicas) e DeepSeek V4 Flash (raciocinio profundo/matematica):
+
+!{pwsh -NoProfile -File "$env:USERPROFILE/.gemini/trio-scripts/invoke-trio.ps1" -Task {{args}} -Team quintet}
+
+Com base nesse resultado:
+1. Apresente PRIMEIRO a sintese unificada (uma conclusao unica).
+2. Depois liste o status por provider, o uso de tokens reportado e a localizacao dos artefatos.
+3. Se algum provider falhou/expirou, preserve as respostas bem-sucedidas e identifique o que falhou.
+
+Mantenha o quinteto em read_only, salvo pedido explicito de implementacao.
+"""

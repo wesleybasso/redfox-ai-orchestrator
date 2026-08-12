@@ -1,0 +1,19 @@
+# Relatorios gerados pelo MCO a cada execucao
+reports/
+
+# Backups criados por scripts/patch-mco-windows.ps1
+*.orig
+
+node_modules/
+__pycache__/
+
+# Configuracoes e credenciais locais
+.mcorc.json
+.env
+.env.*
+*.token
+service.token
+
+# Pacotes e resultados gerados localmente
+RedFox-*.zip
+skill-development/*-workspace/

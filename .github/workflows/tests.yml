@@ -1,0 +1,26 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate public package
+        shell: pwsh
+        run: ./tests/public-release.Tests.ps1
+      - name: Validate local coordinator
+        shell: pwsh
+        run: |
+          ./redfox-local/tests/RedFox.Local.Tests.ps1
+          ./redfox-local/tests/RedFox.Setup.Tests.ps1
+          ./redfox-local/tests/RedFox.Editions.Tests.ps1
+      - name: Validate Trio package
+        shell: pwsh
+        run: ./packages/ai-trio/tests/Test-Package.ps1

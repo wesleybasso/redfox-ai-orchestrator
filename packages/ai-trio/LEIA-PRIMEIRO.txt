@@ -1,0 +1,125 @@
+====================================================================
+ AI TRIO / QUINTETO - COLA RAPIDA DE INSTALACAO (leia antes!)
+====================================================================
+
+!!! IMPORTANTE !!!
+Este pacote NAO instala nem loga as IAs pra voce. Ele so conecta IAs
+que JA estejam instaladas como CLI e JA autenticadas no seu PC.
+Se pular os passos abaixo, o instalador NAO vai funcionar.
+
+O guia completo e explicado esta no arquivo:
+   LEIA-PRIMEIRO-INSTALACAO.md
+Esta aqui e so a versao curta.
+
+--------------------------------------------------------------------
+PASSO 0 - PEGUE ISTO ANTES (contas e chaves)
+--------------------------------------------------------------------
+- Claude Code ...... conta Anthropic (login) ...... https://claude.ai
+- Codex ............ conta OpenAI/ChatGPT (login) .. https://chatgpt.com
+- Gemini ........... API KEY do Google ............. https://aistudio.google.com/apikey
+- Qwen + DeepSeek .. UMA API KEY do OpenRouter ...... https://openrouter.ai/keys
+  (so precisa se for usar o QUINTETO)
+- Pesquisa web ..... Tavily OU Brave (gratis) ....... https://app.tavily.com
+                     (alternativa Brave) ............ https://brave.com/search/api
+  (so precisa se for usar o modo /pesquisa; basta UMA das duas)
+
+ATENCAO: Qwen e DeepSeek usam A MESMA chave (a do OpenRouter).
+NAO sao duas chaves separadas. E UMA SO.
+
+Trio     = Claude + Codex + Gemini
+Quinteto = Trio + Qwen + DeepSeek (precisa tambem da chave OpenRouter)
+
+--------------------------------------------------------------------
+PASSO 1 - BASES
+--------------------------------------------------------------------
+1) Node.js (LTS): https://nodejs.org
+2) PowerShell 7 : https://aka.ms/powershell
+   Sempre use o "PowerShell 7" (icone PRETO), nao o azul antigo.
+
+Testar:  node --version   e   $PSVersionTable.PSVersion
+
+--------------------------------------------------------------------
+PASSO 2 - INSTALAR OS CLIs (colar no PowerShell 7)
+--------------------------------------------------------------------
+TRIO (obrigatorio):
+   npm install --global @tt-a1i/mco@0.11.0
+   npm install --global @anthropic-ai/claude-code@2.1.185
+   npm install --global @openai/codex@0.147.0
+   npm install --global @google/gemini-cli@0.55.1
+
+QUINTETO (opcional, adiciona Qwen + DeepSeek):
+   npm install --global @qwen-code/qwen-code@0.21.6
+   npm install --global --ignore-scripts @earendil-works/pi-coding-agent@0.84.0
+
+--------------------------------------------------------------------
+PASSO 3 - LOGIN / CHAVES (a parte que todo mundo esquece!)
+--------------------------------------------------------------------
+Claude Code -> digite:  claude   (faz login no navegador)
+Codex       -> digite:  codex    (login conta OpenAI)
+Gemini      -> pegue a chave no Google AI Studio e rode (troque SUA_CHAVE):
+   [Environment]::SetEnvironmentVariable('GEMINI_API_KEY','SUA_CHAVE','User')
+Qwen/DeepSeek -> NAO cole a chave a mao. Use o script no PASSO 5.
+
+NUNCA cole sua chave em chat/IA. So no seu proprio PowerShell.
+
+--------------------------------------------------------------------
+PASSO 4 - INSTALAR A INTEGRACAO (dentro da pasta ai-trio-skills)
+--------------------------------------------------------------------
+Testar sem alterar nada:
+   pwsh -NoProfile -File ./install.ps1 -WhatIf
+Instalar de verdade:
+   pwsh -NoProfile -File ./install.ps1
+Depois FECHE e ABRA de novo a IA que for usar.
+
+--------------------------------------------------------------------
+PASSO 5 - (SO QUINTETO) CHAVE DO OPENROUTER
+--------------------------------------------------------------------
+Rode UM destes conforme a IA base que voce usa:
+   Codex : pwsh -NoProfile -File "$env:USERPROFILE/.codex/skills/using-ai-trio/scripts/configure-openrouter.ps1"
+   Gemini: pwsh -NoProfile -File "$env:USERPROFILE/.gemini/trio-scripts/configure-openrouter.ps1"
+   Claude: pwsh -NoProfile -File "$env:USERPROFILE/.claude/skills/using-ai-trio/scripts/configure-openrouter.ps1"
+Cole a chave quando pedir (a tela fica "em branco" ao digitar = normal).
+Depois abra uma nova sessao.
+
+--------------------------------------------------------------------
+PASSO 6 - TESTAR
+--------------------------------------------------------------------
+Teste seguro (nao gasta credito):
+   pwsh -NoProfile -File "$env:USERPROFILE/.codex/skills/using-ai-trio/scripts/invoke-trio.ps1" -Task "teste" -Team trio -DryRun -Json
+
+Usar de verdade:
+ MODO ESPECIALISTA (recomendado - 1 modelo, o certo pra tarefa):
+   No Codex / Claude:  "use o especialista para otimizar este algoritmo"
+   No Gemini CLI:      /especialista otimize este algoritmo
+
+ MODO PESQUISA (web com fontes citadas e verificadas - melhor que Perplexity):
+   Configure a chave 1x: pwsh -File "$env:USERPROFILE/.codex/skills/using-ai-trio/scripts/configure-search.ps1"
+   No Codex / Claude:  "use a pesquisa para achar a versao LTS do Node.js"
+   No Gemini CLI:      /pesquisa qual a versao LTS do Node.js
+
+ MODO CONSELHO (as IAs votam em quem lidera, executam e revisam):
+   No Codex / Claude:  "use o conselho para revisar esta arquitetura"
+   No Gemini CLI:      /conselho revise esta arquitetura
+
+ MODO PAINEL (avancado - varios modelos + sintese):
+   No Codex / Claude:  "use o trio para revisar isto e me de uma conclusao unica"
+                       "use o quinteto para comparar estas abordagens"
+   No Gemini CLI:      /trio revise esta arquitetura
+                       /quinteto compare estas abordagens
+
+ Dica: especialista = mais barato/rapido; conselho = as IAs decidem (mais caro);
+       painel = varios modelos de uma vez.
+ Todos os modos usam persona + regras anti-alucinacao (nao inventam, admitem "nao sei").
+
+--------------------------------------------------------------------
+DEU ERRADO?
+--------------------------------------------------------------------
+- "mco nao encontrado" ......... faltou o PASSO 2 (instalar @tt-a1i/mco)
+- "Qwen e DeepSeek sem credencial" .. faltou o PASSO 5
+- Gemini nao responde .......... faltou a GEMINI_API_KEY (PASSO 3)
+- "pwsh nao reconhecido" ....... abra o PowerShell 7 (icone preto)
+- Nada muda apos configurar .... feche e abra a IA de novo
+
+O QUE MAIS TRAVA: instalar os CLIs mas esquecer de LOGAR/COLOCAR as
+chaves (Passos 3 e 5). Sem isso, o pacote nao tem como funcionar.
+====================================================================

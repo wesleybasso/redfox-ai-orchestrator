@@ -1,0 +1,25 @@
+# Comando customizado do Gemini CLI: /trio
+# Instala em: ~/.gemini/commands/trio.toml
+# Uso no Gemini CLI:  /trio revise esta arquitetura e me entregue uma conclusao unica
+#
+# O comando roda o helper PowerShell que orquestra Claude + Codex + Gemini via MCO
+# (read_only) e injeta o resultado no contexto do Gemini para a sintese final.
+
+description = "Invoca o trio (Claude + Codex + Gemini) via MCO e sintetiza uma conclusao unica."
+
+prompt = """
+Voce e o host de uma equipe multi-modelo. O usuario pediu que o *trio* trabalhasse nesta tarefa:
+
+{{args}}
+
+Abaixo esta o resultado bruto da orquestracao (MCO, modo read_only) com as perspectivas de Claude (arquitetura/riscos/seguranca), Codex (implementacao/testes/performance) e Gemini (pesquisa/documentacao/alternativas):
+
+!{pwsh -NoProfile -File "$env:USERPROFILE/.gemini/trio-scripts/invoke-trio.ps1" -Task {{args}} -Team trio}
+
+Com base nesse resultado:
+1. Apresente PRIMEIRO a sintese unificada (uma conclusao unica, sem repetir cada modelo separadamente).
+2. Depois liste o status por provider, o uso de tokens reportado e a localizacao dos artefatos.
+3. Se algum provider falhou ou expirou, preserve as respostas bem-sucedidas e identifique o que falhou.
+
+Mantenha o trio em read_only. Se o usuario pediu implementacao/correcao, entregue o plano sintetizado e implemente apenas voce (host), depois rode os testes relevantes.
+"""

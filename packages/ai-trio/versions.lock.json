@@ -1,0 +1,16 @@
+{
+  "tested_on": "2026-08-12",
+  "platform": {
+    "os": "Windows 10/11 x64",
+    "powershell": "7.6.4",
+    "node": "24.19.0"
+  },
+  "tools": {
+    "mco": { "package": "@tt-a1i/mco", "version": "0.11.0" },
+    "claude": { "package": "@anthropic-ai/claude-code", "version": "2.1.185" },
+    "codex": { "package": "@openai/codex", "version": "0.147.0" },
+    "gemini": { "package": "@google/gemini-cli", "version": "0.55.1" },
+    "qwen": { "package": "@qwen-code/qwen-code", "version": "0.21.6" },
+    "pi": { "package": "@earendil-works/pi-coding-agent", "version": "0.84.0" }
+  }
+}

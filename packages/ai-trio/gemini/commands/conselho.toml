@@ -1,0 +1,30 @@
+# Comando customizado do Gemini CLI: /conselho
+# Instala em: ~/.gemini/commands/conselho.toml
+# Uso no Gemini CLI:  /conselho revise a arquitetura deste servico
+#
+# As IAs debatem e ELEGEM entre si quem deve liderar, a lider EXECUTA
+# e as demais REVISAM. Tudo em read_only, com persona e regras
+# anti-alucinacao em cada chamada.
+#
+# Dominios algo/math (Qwen/DeepSeek) exigem OpenRouter configurado:
+#   pwsh -File ~/.gemini/trio-scripts/configure-openrouter.ps1
+
+description = "Conselho de IAs: elegem entre si a lider, ela executa e as demais revisam (MCO, read_only)."
+
+prompt = """
+Voce e o host de um conselho multi-modelo. O usuario pediu:
+
+{{args}}
+
+Abaixo esta o resultado do conselho: os modelos votaram em quem deveria liderar, a lider eleita executou a tarefa e as demais revisaram, em modo read_only:
+
+!{pwsh -NoProfile -File "$env:USERPROFILE/.gemini/trio-scripts/invoke-council.ps1" -Task {{args}}}
+
+Com base nesse resultado:
+1. Diga quem foi eleito lider e por que (resumo dos votos).
+2. Apresente o trabalho da lider de forma clara.
+3. Resuma a revisao das demais e o veredito final.
+4. Se algum modelo falhou ou expirou, preserve o que deu certo e identifique a falha.
+
+Mantenha tudo em read_only, salvo pedido explicito de implementacao.
+"""
