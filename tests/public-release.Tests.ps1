@@ -20,6 +20,7 @@ $readme = Assert-File 'README.md'
 $license = Assert-File 'LICENSE'
 $funding = Assert-File '.github\FUNDING.yml'
 $banner = Assert-File 'assets\redfox-banner.png'
+$coffeeQr = Assert-File 'assets\buy-me-a-coffee-qr.png'
 
 $psText = Get-Content -Raw $installPs1
 foreach ($expected in @('redfox-local\Install-RedFox-Suite.ps1', 'packages\ai-trio', '-TrioPackagePath')) {
@@ -57,6 +58,8 @@ foreach ($expected in @(
     'assets/redfox-banner.png',
     'img.shields.io',
     'buymeacoffee.com/wesleybasso',
+    'assets/buy-me-a-coffee-qr.png',
+    'Escaneie o QR Code',
     'Como a RedFox trabalha',
     'Modos inteligentes',
     'Programa Completo',
@@ -74,6 +77,7 @@ if ($fundingText -notmatch [regex]::Escape('https://www.buymeacoffee.com/wesleyb
     throw 'FUNDING.yml nao aponta para o Buy Me a Coffee informado pelo autor.'
 }
 if ((Get-Item -LiteralPath $banner).Length -lt 10000) { throw 'Banner RedFox parece vazio ou invalido.' }
+if ((Get-Item -LiteralPath $coffeeQr).Length -lt 10000) { throw 'QR Code do apoio parece vazio ou invalido.' }
 
 $trackedCandidates = Get-ChildItem -LiteralPath $root -Recurse -File | Where-Object {
     $_.FullName -notmatch '\\.git\\|\\reports\\|\\skill-development\\.*-workspace\\'

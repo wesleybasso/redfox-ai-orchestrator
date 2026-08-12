@@ -189,6 +189,10 @@ Se a RedFox economizou seu tempo ou ajudou no seu projeto, considere apoiar o de
 
 <div align="center">
 
+[<img src="assets/buy-me-a-coffee-qr.png" width="280" alt="QR Code para apoiar Wesley Basso no Buy Me a Coffee">](https://www.buymeacoffee.com/wesleybasso)
+
+**Escaneie o QR Code ou use o botão abaixo.**
+
 [![Buy Me a Coffee](https://img.shields.io/badge/☕_Pague_um_café-Wesley_Basso-FFDD00?style=for-the-badge&labelColor=111111)](https://www.buymeacoffee.com/wesleybasso)
 
 **[buymeacoffee.com/wesleybasso](https://www.buymeacoffee.com/wesleybasso)**
