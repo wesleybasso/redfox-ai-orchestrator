@@ -10,7 +10,7 @@ $ErrorActionPreference = 'Stop'
 
 [IO.Directory]::CreateDirectory($InstallDirectory) | Out-Null
 $needsRestart = $false
-foreach ($name in @('RedFox.Core.psm1','RedFox.Setup.psm1','RedFox.Service.ps1','RedFox.Client.ps1','Configure-RedFox.ps1','Install-RedFox-Suite.ps1','patch-mco-windows.ps1')) {
+foreach ($name in @('RedFox.Core.psm1','RedFox.Setup.psm1','RedFox.Service.ps1','RedFox.Client.ps1','RedFox.Console.ps1','Configure-RedFox.ps1','Install-RedFox-Suite.ps1','patch-mco-windows.ps1')) {
     $source = Join-Path $PSScriptRoot $name
     $destination = Join-Path $InstallDirectory $name
     if (-not (Test-Path $destination) -or (Get-FileHash $source).Hash -ne (Get-FileHash $destination).Hash) { $needsRestart = $true }
@@ -36,6 +36,16 @@ shell.Run Chr(34) & "$pwsh" & Chr(34) & " -NoProfile -ExecutionPolicy Bypass -Fi
 "@
 [IO.File]::WriteAllText($launcherPath, $vbs, [Text.UTF8Encoding]::new($false))
 
+$console = Join-Path $InstallDirectory 'RedFox.Console.ps1'
+$commandPath = Join-Path $InstallDirectory 'redfox.cmd'
+$command = "@echo off`r`n`"$pwsh`" -NoProfile -ExecutionPolicy Bypass -File `"$console`" %*`r`n"
+[IO.File]::WriteAllText($commandPath, $command, [Text.Encoding]::ASCII)
+$userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+$pathParts = @($userPath -split ';' | Where-Object { $_ })
+if ($InstallDirectory -notin $pathParts) {
+    [Environment]::SetEnvironmentVariable('Path', (($pathParts + $InstallDirectory) -join ';'), 'User')
+}
+
 $online = $false
 try { $online = (Invoke-RestMethod -Uri "http://127.0.0.1:$Port/health" -TimeoutSec 2).status -eq 'online' } catch {}
 if ($online -and $needsRestart) {
@@ -57,3 +67,4 @@ if (-not $online) { throw "RedFox foi instalada, mas nao iniciou. Consulte $log 
 
 Write-Host "RedFox instalada e online em http://127.0.0.1:$Port" -ForegroundColor Green
 Write-Host "Inicializacao automatica: $launcherPath"
+Write-Host 'Abra um novo PowerShell e execute: redfox' -ForegroundColor Cyan

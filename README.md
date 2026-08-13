@@ -39,6 +39,7 @@ assinaturas e contas; nenhuma credencial é incluída ou enviada para este repos
 | 🧠 **Cérebro local** | Ollama e Gemma analisam a missão e ajudam a escolher a estratégia. |
 | 🔎 **Descoberta automática** | Identifica agentes instalados, autenticados e disponíveis. |
 | 🦊 **Uma única intermediadora** | Você chama apenas `RedFox`; ela conversa com as outras IAs. |
+| 🎨 **Console próprio** | Interface colorida com mascote, estado das IAs, modos e comandos rápidos. |
 | 🏛️ **Conselho de IAs** | Reúne opiniões, escolhe liderança, revisa e sintetiza o resultado. |
 | 🎯 **Especialista certo** | Evita chamar todos os modelos quando um especialista é suficiente. |
 | 💰 **Controle de custo** | Usa a rota mais econômica compatível com a complexidade da tarefa. |
@@ -117,6 +118,26 @@ curl -fsSL https://raw.githubusercontent.com/wesleybasso/redfox-ai-orchestrator/
    Na edição Skill, use o instalador `.cmd`, `.ps1` ou `.sh` correspondente ao sistema.
 
 ## 🗣️ Como usar
+
+### Console próprio da RedFox
+
+Depois da instalação completa, abra um novo PowerShell ou terminal e execute:
+
+```text
+redfox
+```
+
+A tela colorida mostra a raposinha RedFox, o conselho disponível e um campo para conversar.
+Use `/agentes`, `/status`, `/modo`, `/ajuda`, `/limpar` ou `/sair`. Também é possível enviar
+uma missão diretamente:
+
+```powershell
+redfox -Task "Revise a arquitetura deste projeto" -Mode conselho
+```
+
+No Linux, os mesmos comandos funcionam no terminal.
+
+### Dentro do Codex ou Claude
 
 Depois de instalar, abra uma nova conversa no Codex ou Claude e fale normalmente:
 

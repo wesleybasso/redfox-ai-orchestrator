@@ -121,9 +121,15 @@ ollama pull "$model"
 "$pwsh_bin" -NoProfile -File "$trio_dir/install.ps1"
 bash "$source_root/install-skill.sh" --source-root "$source_root" --home "$user_home"
 
-for file in RedFox.Core.psm1 RedFox.Setup.psm1 RedFox.Service.ps1 RedFox.Client.ps1 Configure-RedFox.ps1; do
+for file in RedFox.Core.psm1 RedFox.Setup.psm1 RedFox.Service.ps1 RedFox.Client.ps1 RedFox.Console.ps1 Configure-RedFox.ps1; do
   cp "$source_root/redfox-local/$file" "$install_dir/$file"
 done
+mkdir -p "$user_home/.local/bin"
+cat > "$user_home/.local/bin/redfox" <<EOF
+#!/usr/bin/env bash
+exec "$pwsh_bin" -NoProfile -File "$install_dir/RedFox.Console.ps1" "\$@"
+EOF
+chmod +x "$user_home/.local/bin/redfox"
 if [[ ! -f "$install_dir/service.token" ]]; then
   umask 077
   od -An -N32 -tx1 /dev/urandom | tr -d ' \n' > "$install_dir/service.token"
@@ -164,4 +170,4 @@ fi
 
 echo
 echo 'RedFox instalada no Linux.'
-echo 'Abra um novo terminal e diga: RedFox, quais IAs voce encontrou?'
+echo 'Abra um novo terminal e execute: redfox'

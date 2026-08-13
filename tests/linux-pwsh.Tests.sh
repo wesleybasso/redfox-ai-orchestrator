@@ -6,6 +6,7 @@ command -v pwsh >/dev/null 2>&1 || { echo 'pwsh e obrigatorio para este teste.' 
 
 pwsh -NoProfile -File "$ROOT/redfox-local/tests/RedFox.Local.Tests.ps1"
 pwsh -NoProfile -File "$ROOT/redfox-local/tests/RedFox.Setup.Tests.ps1"
+pwsh -NoProfile -File "$ROOT/redfox-local/tests/RedFox.Console.Tests.ps1"
 
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
