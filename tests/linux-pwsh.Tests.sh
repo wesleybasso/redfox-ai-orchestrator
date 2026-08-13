@@ -76,7 +76,8 @@ exit 0
 EOF
 find "$mock_bin" -maxdepth 1 -type f -exec chmod +x {} +
 
-HOME="$full_home" PATH="$mock_bin:/usr/bin:/bin" bash "$ROOT/install-linux.sh" \
+env -u XDG_DATA_HOME -u XDG_CONFIG_HOME \
+  HOME="$full_home" PATH="$mock_bin:/usr/bin:/bin" bash "$ROOT/install-linux.sh" \
   --source-root "$ROOT" --home "$full_home" --skip-configuration >/dev/null
 for installed in \
   "$full_home/.local/share/redfox/RedFox.Service.ps1" \
