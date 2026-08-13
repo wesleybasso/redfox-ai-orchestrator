@@ -38,7 +38,7 @@ shell.Run Chr(34) & "$pwsh" & Chr(34) & " -NoProfile -ExecutionPolicy Bypass -Fi
 
 $console = Join-Path $InstallDirectory 'RedFox.Console.ps1'
 $commandPath = Join-Path $InstallDirectory 'redfox.cmd'
-$command = "@echo off`r`n`"$pwsh`" -NoProfile -ExecutionPolicy Bypass -File `"$console`" %*`r`n"
+$command = "@echo off`r`nchcp 65001 >nul`r`ntitle RedFox AI Orchestrator`r`n`"$pwsh`" -NoLogo -NoProfile -ExecutionPolicy Bypass -File `"$console`" %*`r`n"
 [IO.File]::WriteAllText($commandPath, $command, [Text.Encoding]::ASCII)
 & (Join-Path $InstallDirectory 'Install-RedFoxCommand.ps1') -InstallDirectory $InstallDirectory | Out-Null
 

@@ -6,16 +6,16 @@ if (-not (Test-Path -LiteralPath $consolePath)) {
     throw 'RED: a interface RedFox.Console.ps1 ainda nao existe.'
 }
 
-$preview = (& $consolePath -Preview -NoColor 6>&1 | Out-String)
+$preview = (& $consolePath -Preview -NoColor -Width 110 6>&1 | Out-String)
 foreach ($expected in @(
     'REDFOX',
-    'Claude',
-    'Codex',
-    'Gemini',
-    'Copilot',
+    'LOCAL AI ORCHESTRATOR',
+    'SYSTEM ONLINE',
+    'REDFOX // CONSELHO',
+    '██████',
     '/agentes',
     '/ajuda',
-    'Digite sua missao'
+    'QUAL E A MISSAO?'
 )) {
     if ($preview -notmatch [regex]::Escape($expected)) {
         throw "A tela RedFox nao mostrou: $expected"
@@ -23,13 +23,25 @@ foreach ($expected in @(
 }
 if ($preview.Contains([char]27)) { throw 'O modo NoColor ainda emitiu codigos ANSI.' }
 
+$compact = (& $consolePath -Preview -NoColor -Width 56 6>&1 | Out-String)
+foreach ($expected in @('REDFOX // LOCAL AI', 'ONLINE', '/agentes', 'missão')) {
+    if ($compact -notmatch [regex]::Escape($expected)) { throw "Layout compacto nao mostrou: $expected" }
+}
+if ($compact -match 'LOCAL AI ORCHESTRATOR') { throw 'Layout compacto usou o wordmark largo.' }
+
 $source = Get-Content -LiteralPath $consolePath -Raw
 if ($source -notmatch 'RedFox\.Client\.ps1') { throw 'A tela nao esta ligada ao cliente local RedFox.' }
 if ($source -notmatch "'/sair'") { throw 'A tela nao oferece uma saida clara.' }
+if ($source -notmatch 'Console\]::OutputEncoding' -or $source -notmatch 'Get-RedFoxTerminalWidth') {
+    throw 'A interface nao prepara Unicode nem adapta a largura do terminal.'
+}
 
 $windowsInstaller = Get-Content -LiteralPath (Join-Path $root 'Install-RedFox.ps1') -Raw
 if ($windowsInstaller -notmatch 'RedFox\.Console\.ps1' -or $windowsInstaller -notmatch 'redfox\.cmd') {
     throw 'O instalador Windows ainda nao cria o comando redfox.'
+}
+if ($windowsInstaller -notmatch 'chcp 65001' -or $windowsInstaller -notmatch 'title RedFox') {
+    throw 'O atalho CMD nao prepara Unicode e identidade visual.'
 }
 $linuxInstaller = Get-Content -LiteralPath (Join-Path $root 'install-linux.sh') -Raw
 if ($linuxInstaller -notmatch 'RedFox\.Console\.ps1' -or $linuxInstaller -notmatch '\.local/bin/redfox') {
@@ -68,9 +80,12 @@ if ($Agents) {
     }
     if ($oneShot -match '"mission"') { throw 'A tela exibiu JSON interno em vez da resposta amigavel.' }
 
-    $agentPanel = (& (Join-Path $temp 'RedFox.Console.ps1') -Agents -NoColor 6>&1 | Out-String)
+    $agentPanel = (& (Join-Path $temp 'RedFox.Console.ps1') -Agents -NoColor -Width 100 6>&1 | Out-String)
     if ($agentPanel -notmatch 'claude\s+pronta' -or $agentPanel -notmatch 'gemini\s+precisa autenticar') {
         throw 'A tela nao interpretou a resposta envelopada do endpoint de agentes.'
+    }
+    if ($agentPanel -notmatch 'CONSELHO DETECTADO' -or $agentPanel -notmatch 'PRONTAS\s+1/2') {
+        throw 'O painel de agentes nao mostrou titulo e resumo visual.'
     }
 }
 finally {
