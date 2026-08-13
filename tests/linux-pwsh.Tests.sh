@@ -74,7 +74,7 @@ cat > "$mock_bin/systemctl" <<'EOF'
 #!/usr/bin/env bash
 exit 0
 EOF
-chmod +x "$mock_bin"/*
+find "$mock_bin" -maxdepth 1 -type f -exec chmod +x {} +
 
 HOME="$full_home" PATH="$mock_bin:/usr/bin:/bin" bash "$ROOT/install-linux.sh" \
   --source-root "$ROOT" --home "$full_home" --skip-configuration >/dev/null
