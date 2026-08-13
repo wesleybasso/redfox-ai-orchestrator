@@ -46,6 +46,12 @@ try {
     Copy-Item -LiteralPath $consolePath -Destination (Join-Path $temp 'RedFox.Console.ps1')
     @'
 param([string]$Task,[string]$Mode,[string]$Repo,[int]$Port,[switch]$Status,[switch]$Agents)
+if ($Agents) {
+    return [pscustomobject]@{ agents=@(
+        [pscustomobject]@{ Name='claude'; Ready=$true; Detected=$true },
+        [pscustomobject]@{ Name='gemini'; Ready=$false; Detected=$true }
+    ) }
+}
 [pscustomobject]@{
     mission_id = 'teste-123'
     plan = [pscustomobject]@{ Mode='especialista'; SynthProvider='codex' }
@@ -61,6 +67,11 @@ param([string]$Task,[string]$Mode,[string]$Repo,[int]$Port,[switch]$Status,[swit
         throw 'A tela nao apresentou a resposta unificada do agente.'
     }
     if ($oneShot -match '"mission"') { throw 'A tela exibiu JSON interno em vez da resposta amigavel.' }
+
+    $agentPanel = (& (Join-Path $temp 'RedFox.Console.ps1') -Agents -NoColor 6>&1 | Out-String)
+    if ($agentPanel -notmatch 'claude\s+pronta' -or $agentPanel -notmatch 'gemini\s+precisa autenticar') {
+        throw 'A tela nao interpretou a resposta envelopada do endpoint de agentes.'
+    }
 }
 finally {
     Remove-Item -LiteralPath $temp -Recurse -Force

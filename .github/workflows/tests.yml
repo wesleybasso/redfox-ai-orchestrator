@@ -21,6 +21,7 @@ jobs:
           ./redfox-local/tests/RedFox.Local.Tests.ps1
           ./redfox-local/tests/RedFox.Setup.Tests.ps1
           ./redfox-local/tests/RedFox.Console.Tests.ps1
+          ./redfox-local/tests/RedFox.Command.Tests.ps1
           ./redfox-local/tests/RedFox.Editions.Tests.ps1
       - name: Validate Trio package
         shell: pwsh

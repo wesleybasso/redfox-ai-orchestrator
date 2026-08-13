@@ -18,7 +18,7 @@ $skillTarget = Join-Path $target 'skills\redfox'
 [IO.Directory]::CreateDirectory($trioTarget) | Out-Null
 [IO.Directory]::CreateDirectory($skillTarget) | Out-Null
 
-foreach ($name in @('RedFox.Core.psm1','RedFox.Setup.psm1','RedFox.Service.ps1','RedFox.Client.ps1','RedFox.Console.ps1','Install-RedFox.ps1','Install-RedFox-Suite.ps1','Configure-RedFox.ps1','patch-mco-windows.ps1','install-linux.sh','configure-linux.sh')) {
+foreach ($name in @('RedFox.Core.psm1','RedFox.Setup.psm1','RedFox.Service.ps1','RedFox.Client.ps1','RedFox.Console.ps1','Install-RedFoxCommand.ps1','Install-RedFox.ps1','Install-RedFox-Suite.ps1','Configure-RedFox.ps1','patch-mco-windows.ps1','install-linux.sh','configure-linux.sh')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination (Join-Path $redfoxTarget $name)
 }
 Copy-Item -Path (Join-Path $TrioSource '*') -Destination $trioTarget -Recurse

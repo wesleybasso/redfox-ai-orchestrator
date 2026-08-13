@@ -16,6 +16,7 @@ try {
         "$skill.zip",
         (Join-Path $complete 'redfox-local\Install-RedFox-Suite.ps1'),
         (Join-Path $complete 'redfox-local\RedFox.Console.ps1'),
+        (Join-Path $complete 'redfox-local\Install-RedFoxCommand.ps1'),
         (Join-Path $complete 'packages\ai-trio\install.ps1'),
         (Join-Path $complete 'skills\redfox\SKILL.md'),
         (Join-Path $complete 'install.ps1'),

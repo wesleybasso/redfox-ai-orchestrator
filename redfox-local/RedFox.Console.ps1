@@ -4,6 +4,8 @@ param(
     [ValidateSet('auto','especialista','pesquisa','conselho')][string]$Mode = 'auto',
     [ValidateRange(1024,65535)][int]$Port = 4777,
     [string]$Repo = (Get-Location).Path,
+    [switch]$Status,
+    [switch]$Agents,
     [switch]$Preview,
     [switch]$NoColor
 )
@@ -110,6 +112,17 @@ function Show-RedFoxAgents {
     Write-RedFoxText ''
 }
 
+function Invoke-RedFoxAgentPanel {
+    $response = & $clientPath -Agents -Port $Port
+    $list = if ($response.PSObject.Properties['agents']) { @($response.agents) } else { @($response) }
+    Show-RedFoxAgents -Agents $list
+}
+
+function Invoke-RedFoxStatusPanel {
+    $health = & $clientPath -Status -Port $Port
+    Write-RedFoxText ("  ● RedFox online — cérebro: {0}" -f $health.brain) Good
+}
+
 Show-RedFoxHeader
 if ($Preview) { return }
 
@@ -117,6 +130,8 @@ $clientPath = Join-Path $PSScriptRoot 'RedFox.Client.ps1'
 if (-not (Test-Path -LiteralPath $clientPath)) {
     throw "Cliente local ausente: $clientPath"
 }
+if ($Status) { Invoke-RedFoxStatusPanel; return }
+if ($Agents) { Invoke-RedFoxAgentPanel; return }
 if (-not [string]::IsNullOrWhiteSpace($Task)) {
     Invoke-RedFoxConsoleTask -Prompt $Task
     return
@@ -135,14 +150,12 @@ while ($true) {
     if ($command -eq '/ajuda') { Show-RedFoxHelp; continue }
     if ($command -eq '/limpar') { Clear-Host; Show-RedFoxHeader; continue }
     if ($command -eq '/status') {
-        try {
-            $health = & $clientPath -Status -Port $Port
-            Write-RedFoxText ("  ● RedFox online — cérebro: {0}" -f $health.brain) Good
-        } catch { Write-RedFoxText "  ○ Serviço offline — $($_.Exception.Message)" Bad }
+        try { Invoke-RedFoxStatusPanel }
+        catch { Write-RedFoxText "  ○ Serviço offline — $($_.Exception.Message)" Bad }
         continue
     }
     if ($command -eq '/agentes') {
-        try { Show-RedFoxAgents -Agents @(& $clientPath -Agents -Port $Port) }
+        try { Invoke-RedFoxAgentPanel }
         catch { Write-RedFoxText "  Não consegui consultar as IAs: $($_.Exception.Message)" Bad }
         continue
     }
