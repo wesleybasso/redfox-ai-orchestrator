@@ -40,7 +40,7 @@ assinaturas e contas; nenhuma credencial é incluída ou enviada para este repos
 | 🔎 **Descoberta automática** | Identifica agentes instalados, autenticados e disponíveis. |
 | 🦊 **Uma única intermediadora** | Você chama apenas `RedFox`; ela conversa com as outras IAs. |
 | 🎨 **Console próprio** | Interface colorida com mascote, estado das IAs, modos e comandos rápidos. |
-| 🏛️ **Conselho de IAs** | Reúne opiniões, escolhe liderança, revisa e sintetiza o resultado. |
+| 🏛️ **Conselho de IAs** | Reúne as melhores IAs disponíveis e sintetiza o resultado em uma resposta. |
 | 🎯 **Especialista certo** | Evita chamar todos os modelos quando um especialista é suficiente. |
 | 💰 **Controle de custo** | Usa a rota mais econômica compatível com a complexidade da tarefa. |
 | 🔐 **Local e seguro** | Credenciais ficam no perfil do usuário e agentes externos começam em somente leitura. |
@@ -135,6 +135,10 @@ uma missão diretamente:
 redfox -Task "Revise a arquitetura deste projeto" -Mode conselho
 ```
 
+Os modos também podem ser escolhidos explicitamente com `-Mode especialista`, `pesquisa`,
+`conselho`, `equipe`, `trio` ou `quinteto`. O debate entre agentes só é ativado quando você
+adiciona `-Debate`.
+
 No Linux, os mesmos comandos funcionam no terminal.
 
 ### Dentro do Codex ou Claude
@@ -177,12 +181,14 @@ de várias IAs editarem os mesmos arquivos simultaneamente.
 | --- | --- | --- |
 | **Especialista** | Implementação, correção, revisão focada ou pergunta comum | O agente mais adequado |
 | **Pesquisa** | Informação atual, documentação, web e fontes | Pesquisador + verificador |
-| **Conselho** | Arquitetura, decisão importante, risco ou alternativas concorrentes | Todos os agentes prontos |
-| **Trio** | Solicitação explícita de três perspectivas | Claude + Codex + Gemini |
-| **Quinteto** | Análise máxima solicitada pelo usuário | Trio + Qwen + DeepSeek |
+| **Conselho** | Arquitetura, decisão importante, risco ou alternativas concorrentes | Até três agentes prontos, escolhidos dinamicamente |
+| **Equipe** | Solicitação explícita para usar todas as IAs disponíveis | Todos os agentes prontos e seguros |
+| **Trio** | Solicitação explícita de três perspectivas | Os três melhores agentes disponíveis |
+| **Quinteto** | Análise ampla solicitada pelo usuário | Os cinco melhores agentes disponíveis, ou os que estiverem prontos |
 
 A RedFox evita usar todos os modelos em tarefas rotineiras. Isso reduz demora e consumo de
-tokens sem abrir mão do conselho quando ele realmente agrega valor.
+tokens sem abrir mão do conselho quando ele realmente agrega valor. Em equipes, faz uma
+rodada paralela e uma única síntese (`N + 1` chamadas); rodadas extras de debate são opcionais.
 
 ## 🤖 Agentes compatíveis
 
@@ -190,9 +196,13 @@ tokens sem abrir mão do conselho quando ele realmente agrega valor.
 - OpenAI Codex CLI
 - Google Gemini CLI
 - GitHub Copilot CLI
+- Cursor
+- OpenCode
+- Pi
+- Grok
 - Qwen Code
 - DeepSeek por uma rota compatível
-- Outros agentes reconhecidos pelo MCO
+- Qualquer agente atual ou futuro reconhecido pelo MCO
 
 Um agente detectado só entra no conselho quando está instalado, autenticado e aprovado nas
 verificações de segurança. Agentes indisponíveis aparecem no diagnóstico, mas não são

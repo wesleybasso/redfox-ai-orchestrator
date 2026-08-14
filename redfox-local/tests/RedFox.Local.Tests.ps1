@@ -38,18 +38,31 @@ if (($agents | Where-Object Name -eq 'qwen').State -ne 'installed_not_ready') { 
 
 $council = Select-RedFoxCouncil -Agents $agents -Task 'Decida a arquitetura' -Mode conselho
 $names = @($council.Providers)
-foreach ($expected in @('claude', 'codex', 'gemini', 'pi', 'novaia')) {
-    if ($expected -notin $names) { throw "Conselho nao absorveu agente pronto: $expected" }
-}
+if ($names.Count -ne 3) { throw "Conselho economico deveria usar tres agentes, recebeu $($names.Count)." }
 foreach ($blocked in @('qwen', 'hermes')) {
     if ($blocked -in $names) { throw "Conselho incluiu agente indisponivel ou inseguro: $blocked" }
 }
 if ($council.SynthProvider -ne 'claude') { throw 'Claude deveria ser o sintetizador preferencial.' }
+if ($council.Debate) { throw 'Debate nao deveria ser automatico.' }
+
+$team = Select-RedFoxCouncil -Agents $agents -Task 'Use todas as IAs' -Mode equipe
+$teamNames = @($team.Providers)
+foreach ($expected in @('claude', 'codex', 'gemini', 'pi', 'novaia')) {
+    if ($expected -notin $teamNames) { throw "Equipe completa ignorou agente pronto: $expected" }
+}
+foreach ($blocked in @('qwen', 'hermes')) {
+    if ($blocked -in $teamNames) { throw "Equipe completa incluiu agente indisponivel ou inseguro: $blocked" }
+}
+
+$debate = Select-RedFoxCouncil -Agents $agents -Task 'Debata a arquitetura' -Mode conselho -Debate
+if (-not $debate.Debate) { throw 'Debate explicito nao foi preservado.' }
 
 $specialist = Select-RedFoxCouncil -Agents $agents -Task 'Corrija o bug e rode os testes' -Mode especialista
 if (@($specialist.Providers).Count -ne 1 -or $specialist.Providers[0] -ne 'codex') { throw 'Tarefa de implementacao deveria ir somente ao Codex.' }
 
 if ((Resolve-RedFoxMode -Task 'Precisamos escolher a arquitetura') -ne 'conselho') { throw 'Arquitetura deveria ativar conselho.' }
+if ((Resolve-RedFoxMode -Task 'Use todas as IAs') -ne 'equipe') { throw 'Todas as IAs deveria ativar equipe.' }
+if ((Resolve-RedFoxMode -Task 'Use o trio') -ne 'trio') { throw 'Trio explicito deveria preservar o modo trio.' }
 if ((Resolve-RedFoxMode -Task 'Corrija o formulario') -ne 'especialista') { throw 'Correcao simples deveria ativar especialista.' }
 
 $script:executionCount = 0
