@@ -43,7 +43,7 @@ function Get-RedFoxAgents {
         $risk = if ($riskProperty -and $riskProperty.Value.PSObject.Properties['level']) { [string]$riskProperty.Value.level } else { 'unknown' }
         $binaryProperty = $item.PSObject.Properties['binary_path']
         $versionProperty = $item.PSObject.Properties['version']
-        $safe = $risk -ne 'approval_bypass'
+        $safe = $risk -in @('read_only', 'workspace_write')
         $ready = [bool]$item.ready -and $safe
         [pscustomobject]@{
             Name       = $name
@@ -64,8 +64,10 @@ function Resolve-RedFoxMode {
     param([Parameter(Mandatory)][string]$Task)
 
     $text = $Task.ToLowerInvariant()
-    if ($text -match '\b(quinteto|todos os agentes|todas as ias|profundidade maxima)\b') { return 'conselho' }
-    if ($text -match '\b(trio|conselho|decid|escolh|arquitetura|alto risco|alternativas)\w*') { return 'conselho' }
+    if ($text -match '\b(equipe|qualquer ia|quaisquer ias|todos os agentes|todas as ias)\b') { return 'equipe' }
+    if ($text -match '\b(quinteto|cinco ias|profundidade maxima)\b') { return 'quinteto' }
+    if ($text -match '\b(trio|tres ias)\b') { return 'trio' }
+    if ($text -match '\b(conselho|decid|escolh|arquitetura|alto risco|alternativas)\w*') { return 'conselho' }
     if ($text -match '\b(pesquis|fontes|citacoes|web|noticias|mais recente)\w*') { return 'pesquisa' }
     return 'especialista'
 }
@@ -97,21 +99,32 @@ function Select-RedFoxCouncil {
     param(
         [Parameter(Mandatory)][object[]]$Agents,
         [Parameter(Mandatory)][string]$Task,
-        [ValidateSet('auto', 'especialista', 'pesquisa', 'conselho')]
+        [ValidateSet('auto', 'especialista', 'pesquisa', 'conselho', 'equipe', 'trio', 'quinteto')]
         [string]$Mode = 'auto',
-        [string]$PreferredProvider
+        [string]$PreferredProvider,
+        [switch]$Debate
     )
 
     $resolvedMode = if ($Mode -eq 'auto') { Resolve-RedFoxMode -Task $Task } else { $Mode }
     $ready = @($Agents | Where-Object { $_.Ready -and $_.Safe } | Sort-Object Name)
     if ($ready.Count -eq 0) { throw 'Nenhum agente pronto e seguro esta disponivel.' }
 
-    $providers = if ($resolvedMode -eq 'conselho') {
-        @($ready.Name)
+    $lead = if ($PreferredProvider -and $PreferredProvider -in $ready.Name) {
+        $PreferredProvider
+    } else {
+        Get-PreferredSpecialist -Task $Task -ReadyAgents $ready
+    }
+    $ranked = [string[]]@($lead) + [string[]]@($ready.Name | Where-Object { $_ -ne $lead })
+    $providers = if ($resolvedMode -eq 'equipe') {
+        @($ranked)
+    } elseif ($resolvedMode -eq 'quinteto') {
+        @($ranked | Select-Object -First 5)
+    } elseif ($resolvedMode -in @('conselho', 'trio')) {
+        @($ranked | Select-Object -First 3)
     } elseif ($PreferredProvider -and $PreferredProvider -in $ready.Name) {
         @($PreferredProvider)
     } else {
-        @(Get-PreferredSpecialist -Task $Task -ReadyAgents $ready)
+        @($lead)
     }
     $providerArray = [string[]]@($providers)
     $synth = if ('claude' -in $providerArray) { 'claude' } else { $providerArray[0] }
@@ -122,6 +135,7 @@ function Select-RedFoxCouncil {
         Providers     = $providerArray
         SynthProvider = $synth
         ExecutionMode = 'read_only'
+        Debate        = [bool]$Debate
         Discovered    = @($Agents | Where-Object Detected).Count
         Ready         = $ready.Count
     }
@@ -141,18 +155,19 @@ function Invoke-RedFoxMco {
         '--providers', ($Plan.Providers -join ','),
         '--target-paths', $TargetPaths,
         '--execution-mode', 'read_only',
-        '--result-mode', 'both',
-        '--include-token-usage', '--json'
+        '--result-mode', 'stdout', '--quiet',
+        '--invocation-hard-timeout', '180',
+        '--review-hard-timeout', '600'
     )
     if (@($Plan.Providers).Count -gt 1) {
         $args += @('--synthesize', '--synth-provider', $Plan.SynthProvider)
-        if ($Plan.Mode -eq 'conselho') { $args += '--debate' }
+        if ($Plan.Debate) { $args += '--debate' }
     }
     if ($DryRun) { $args += '--dry-run' }
 
     $raw = & mco @args 2>&1 | Out-String
     if ($LASTEXITCODE -gt 1) { throw "MCO falhou: $raw" }
-    try { return ($raw | ConvertFrom-Json) } catch { return [pscustomobject]@{ status = 'raw'; output = $raw } }
+    return [pscustomobject]@{ status = 'complete'; output = $raw.Trim() }
 }
 
 function Invoke-RedFoxAgentLoop {
