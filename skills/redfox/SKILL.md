@@ -7,6 +7,8 @@ description: Use when the user addresses "RedFox", "Red Fox" or "raposa", asks f
 
 RedFox supports two editions. The standalone skill coordinates any provider that MCO reports as ready and safe. The complete-program edition adds a persistent local coordinator powered by Ollama. Prefer the local service when available and use the dynamic MCO fallback otherwise.
 
+The complete program stores local mission data under `%LOCALAPPDATA%\RedFox\missions` on Windows or `~/.local/share/redfox/missions` on Linux.
+
 Providers are capabilities, not a fixed roster. Claude, Codex, Copilot, Cursor, Gemini, Grok, OpenCode, Pi, Qwen or future MCO adapters join automatically when detected, authenticated and safe. RedFox returns one coherent synthesis and never requires a SKILL.md edit to admit a new compatible provider.
 
 Do not require or install Ollama from the standalone skill. Installation of Ollama, CLIs and the local service belongs only to the separately distributed complete-program edition for Windows or Linux. Never automate credentials beyond secure local prompts.
